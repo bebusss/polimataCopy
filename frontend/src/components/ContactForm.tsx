@@ -1,18 +1,60 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { contactAPI } from '../lib/api'
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     company: '',
-    message: ''
+    message: '',
+    service: ''
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    // Here you would integrate with the backend API
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+    setErrorMessage('')
+
+    try {
+      // Construir el mensaje completo
+      const message = `Servicio solicitado: ${formData.service || 'No especificado'}
+Compañía: ${formData.company || 'No especificada'}
+
+${formData.message}`
+
+      await contactAPI.submit({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company,
+        message: message
+      })
+
+      setSubmitStatus('success')
+      // Limpiar formulario
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        message: '',
+        service: ''
+      })
+
+      // Ocultar mensaje de éxito después de 5 segundos
+      setTimeout(() => {
+        setSubmitStatus('idle')
+      }, 5000)
+    } catch (error: any) {
+      console.error('Error submitting form:', error)
+      setSubmitStatus('error')
+      setErrorMessage(error.response?.data?.detail || 'Error al enviar el formulario. Por favor intenta de nuevo.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -75,9 +117,13 @@ export default function ContactForm() {
             />
           </div>
 
-          <div className="mb-8">
+          <div className="mb-6">
             <label className="block text-sm font-medium mb-2">¿Qué necesita tu negocio?</label>
-            <select className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none transition-colors">
+            <select
+              value={formData.service}
+              onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none transition-colors"
+            >
               <option value="">Selecciona</option>
               <option value="automation">Automatización</option>
               <option value="ai-agents">Agentes IA</option>
@@ -85,13 +131,45 @@ export default function ContactForm() {
             </select>
           </div>
 
+          <div className="mb-8">
+            <label className="block text-sm font-medium mb-2">Mensaje (opcional)</label>
+            <textarea
+              placeholder="Cuéntanos más sobre tu proyecto..."
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              rows={4}
+              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none transition-colors resize-none"
+            />
+          </div>
+
+          {submitStatus === 'success' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400"
+            >
+              ¡Mensaje enviado exitosamente! Nos pondremos en contacto pronto.
+            </motion.div>
+          )}
+
+          {submitStatus === 'error' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400"
+            >
+              {errorMessage}
+            </motion.div>
+          )}
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-blue-500/50 transition-all"
+            disabled={isSubmitting || !formData.name || !formData.email}
+            className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full text-lg font-semibold hover:shadow-2xl hover:shadow-blue-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Quiero mi llamada
+            {isSubmitting ? 'Enviando...' : 'Quiero mi llamada'}
           </motion.button>
         </motion.form>
       </div>
