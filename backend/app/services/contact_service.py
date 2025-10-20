@@ -60,3 +60,28 @@ class ContactService:
             select(Contact).where(Contact.email == email)
         )
         return result.scalars().all()
+
+    async def list_contacts(self, skip: int = 0, limit: int = 100) -> list[Contact]:
+        """List all contacts with pagination"""
+        result = await self.db.execute(
+            select(Contact).order_by(Contact.created_at.desc()).offset(skip).limit(limit)
+        )
+        return result.scalars().all()
+
+    async def update_contact_status(self, contact_id: int, status: str) -> Optional[Contact]:
+        """Update contact status"""
+        contact = await self.get_contact(contact_id)
+        if contact:
+            contact.status = status
+            await self.db.commit()
+            await self.db.refresh(contact)
+        return contact
+
+    async def delete_contact(self, contact_id: int) -> bool:
+        """Delete contact"""
+        contact = await self.get_contact(contact_id)
+        if contact:
+            await self.db.delete(contact)
+            await self.db.commit()
+            return True
+        return False

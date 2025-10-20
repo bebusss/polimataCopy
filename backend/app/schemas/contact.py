@@ -24,6 +24,7 @@ class ContactCreate(ContactBase):
 class ContactResponse(ContactBase):
     """Schema for contact response"""
     id: int
+    status: str = 'new'
     created_at: datetime
 
     class Config:

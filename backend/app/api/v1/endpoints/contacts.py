@@ -45,3 +45,48 @@ async def get_contact(
         raise HTTPException(status_code=404, detail="Contact not found")
 
     return contact
+
+@router.get("/", response_model=list[ContactResponse])
+async def list_contacts(
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db)
+):
+    """List all contacts"""
+    contact_service = ContactService(db)
+    contacts = await contact_service.list_contacts(skip=skip, limit=limit)
+    return contacts
+
+
+@router.put("/{contact_id}", response_model=ContactResponse)
+async def update_contact(
+    contact_id: int,
+    status: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Update contact status"""
+    if status not in ['new', 'contacted', 'closed']:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    contact_service = ContactService(db)
+    contact = await contact_service.update_contact_status(contact_id, status)
+    
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    return contact
+
+
+@router.delete("/{contact_id}")
+async def delete_contact(
+    contact_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """Delete contact"""
+    contact_service = ContactService(db)
+    success = await contact_service.delete_contact(contact_id)
+    
+    if not success:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    return {"message": "Contact deleted successfully"}
