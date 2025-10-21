@@ -6,7 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.contact import Contact
 from app.schemas.contact import ContactCreate
+from app.services.ai_service import AIService
 from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ContactService:
@@ -14,21 +18,50 @@ class ContactService:
 
     def __init__(self, db: AsyncSession):
         self.db = db
+        self.ai_service = AIService()
 
     async def create_contact(self, contact_data: ContactCreate) -> Contact:
         """
-        Create new contact entry
+        Create new contact entry with AI lead scoring
 
         Args:
             contact_data: Validated contact data
 
         Returns:
-            Created contact object
+            Created contact object with AI scoring
         """
+        # Create contact instance
         contact = Contact(**contact_data.model_dump())
+
+        # Add to database first
         self.db.add(contact)
         await self.db.commit()
         await self.db.refresh(contact)
+
+        # Score the lead with AI (async, non-blocking)
+        try:
+            ai_score = await self.ai_service.score_lead(
+                name=contact.name,
+                email=contact.email,
+                company=contact.company,
+                message=contact.message
+            )
+
+            # Update contact with AI insights
+            contact.ai_score = ai_score.get('score')
+            contact.ai_priority = ai_score.get('priority')
+            contact.ai_insights = ai_score.get('insights')
+            contact.ai_suggested_response = ai_score.get('suggested_response')
+
+            await self.db.commit()
+            await self.db.refresh(contact)
+
+            logger.info(f"Contact {contact.id} scored: {ai_score.get('score')} ({ai_score.get('priority')})")
+
+        except Exception as e:
+            logger.error(f"Error scoring lead {contact.id}: {str(e)}")
+            # Continue without AI scoring if it fails
+
         return contact
 
     async def get_contact(self, contact_id: int) -> Optional[Contact]:

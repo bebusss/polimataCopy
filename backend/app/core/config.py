@@ -29,11 +29,13 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379"
     REDIS_CACHE_TTL: int = 300  # 5 minutes
 
-    # CORS
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:8000",
-    ]
+    # CORS - Usar str y parsear manualmente
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8000,http://localhost:19006,http://127.0.0.1:3000,http://127.0.0.1:8000"
+
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Parse CORS origins from comma-separated string"""
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
 
     # Email (optional)
     SMTP_HOST: Optional[str] = None

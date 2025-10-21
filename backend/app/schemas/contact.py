@@ -4,7 +4,7 @@ Pydantic models for request/response validation
 """
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class ContactBase(BaseModel):
@@ -25,7 +25,12 @@ class ContactResponse(ContactBase):
     """Schema for contact response"""
     id: int
     status: str = 'new'
+    ai_score: Optional[int] = None
+    ai_priority: Optional[str] = None
+    ai_insights: Optional[Dict[str, Any]] = None
+    ai_suggested_response: Optional[str] = None
     created_at: datetime
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
