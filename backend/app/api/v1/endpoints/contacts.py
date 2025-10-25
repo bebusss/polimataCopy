@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
-from app.schemas.contact import ContactCreate, ContactResponse
+from app.schemas.contact import ContactCreate, ContactResponse, ContactUpdate
 from app.services.contact_service import ContactService
 import logging
 
@@ -65,16 +65,13 @@ async def list_contacts(
 @router.put("/{contact_id}", response_model=ContactResponse)
 async def update_contact(
     contact_id: int,
-    status: str,
+    contact_update: ContactUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Update contact status (Protected - requires authentication)"""
-    if status not in ['new', 'contacted', 'closed']:
-        raise HTTPException(status_code=400, detail="Invalid status")
-
     contact_service = ContactService(db)
-    contact = await contact_service.update_contact_status(contact_id, status)
+    contact = await contact_service.update_contact_status(contact_id, contact_update.status)
 
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")

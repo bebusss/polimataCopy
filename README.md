@@ -1,216 +1,156 @@
-# Polímata.AI - AI-Powered Business Solutions Platform
+# Polímata.AI - AI-Powered CRM Platform
 
-Modern, scalable platform for AI-driven business automation and optimization. Built with enterprise-grade architecture and industry best practices.
+Modern fullstack CRM platform with AI-driven lead scoring (Claude AI), JWT authentication, and real-time analytics dashboard.
+
+## 🎯 Key Features
+
+- **🤖 AI Lead Scoring**: Claude API (Anthropic) integration for automatic contact analysis
+- **🔐 JWT Authentication**: Secure login/register system with token management
+- **📊 Analytics Dashboard**: Real-time metrics, charts, and statistics visualization
+- **📱 Mobile App**: React Native (Expo) with data synchronization
+- **🎨 Modern UI/UX**: Responsive design with Tailwind CSS and Framer Motion
+- **⚡ Async Architecture**: FastAPI with SQLAlchemy async for maximum performance
+- **🐳 Dockerized**: Complete deployment with Docker Compose
+
+## 🏗️ System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         FRONTEND LAYER                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Web (React + TypeScript)          Mobile (React Native/Expo)  │
+│  ├─ Landing Page                   ├─ Login Screen             │
+│  ├─ Login/Register                 ├─ Contacts List            │
+│  ├─ Dashboard                      └─ Contact Details          │
+│  ├─ Contacts Management                                         │
+│  └─ Analytics Charts                                            │
+└─────────────────────────────────────────────────────────────────┘
+                               ↓ REST API
+┌─────────────────────────────────────────────────────────────────┐
+│                         BACKEND LAYER                           │
+├─────────────────────────────────────────────────────────────────┤
+│  FastAPI (Python 3.11)                                          │
+│  ├─ /api/v1/auth          → Authentication (JWT)               │
+│  ├─ /api/v1/contacts      → CRUD Contacts                       │
+│  ├─ /api/v1/analytics     → Statistics & Metrics                │
+│  └─ /api/v1/chat          → AI Chatbot                          │
+└─────────────────────────────────────────────────────────────────┘
+                               ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                       SERVICE LAYER                             │
+├─────────────────────────────────────────────────────────────────┤
+│  ├─ UserService           → User management                     │
+│  ├─ ContactService        → Contact business logic              │
+│  └─ AIService             → Claude API integration              │
+└─────────────────────────────────────────────────────────────────┘
+                               ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                       DATA LAYER                                │
+├─────────────────────────────────────────────────────────────────┤
+│  PostgreSQL 15 + SQLAlchemy (Async)                             │
+│  ├─ users                 → User accounts                       │
+│  └─ contacts              → Lead submissions with AI data       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 
 ## 🚀 Tech Stack
 
-### Frontend
-- **React 18** with TypeScript
-- **Tailwind CSS** for styling
-- **Framer Motion** for animations
-- **React Query** for data fetching
-- **Zustand** for state management
-- **Vite** for blazing-fast builds
+### Frontend Web
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 18.2.0 | UI Library |
+| TypeScript | 5.2.2 | Type Safety |
+| Vite | 5.0.0 | Ultra-fast Build Tool |
+| React Router | 6.20.0 | Client-side Routing |
+| Zustand | 4.4.7 | State Management |
+| React Query | 5.8.4 | Server State & Caching |
+| Axios | 1.6.2 | HTTP Client |
+| Recharts | 2.10.3 | Data Visualization |
+| Tailwind CSS | 3.3.6 | Utility-first CSS |
+| Framer Motion | 10.16.5 | Animations |
 
 ### Backend
-- **FastAPI** (Python 3.11+)
-- **PostgreSQL** with Supabase
-- **SQLAlchemy** ORM
-- **Pydantic** for validation
-- **Alembic** for migrations
-- **Redis** for caching
 
-### DevOps
-- **Docker** & Docker Compose
-- **GitHub Actions** for CI/CD
-- **Nginx** reverse proxy
-- **Let's Encrypt** SSL
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| FastAPI | 0.104.1 | Web Framework |
+| Python | 3.11+ | Programming Language |
+| SQLAlchemy | 2.0.23 | ORM (Async) |
+| PostgreSQL | 15 | Relational Database |
+| asyncpg | 0.29.0 | Async PostgreSQL Driver |
+| Pydantic | 2.5.0 | Data Validation |
+| passlib | 1.7.4 | Password Hashing |
+| python-jose | 3.3.0 | JWT Tokens |
 
-### Testing
-- **Jest** + React Testing Library (Frontend)
-- **Pytest** + Coverage (Backend)
-- **Cypress** for E2E testing
+## 🔧 Quick Start
 
-## 📁 Project Structure
+**Prerequisites:** Docker & Docker Compose
 
-```
-polimataCopy/
-├── frontend/                 # React TypeScript application
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Page components
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── services/        # API services
-│   │   ├── store/           # State management
-│   │   ├── utils/           # Utility functions
-│   │   └── types/           # TypeScript definitions
-│   ├── public/
-│   └── tests/
-├── backend/                  # FastAPI application
-│   ├── app/
-│   │   ├── api/             # API routes
-│   │   ├── core/            # Core configurations
-│   │   ├── models/          # Database models
-│   │   ├── schemas/         # Pydantic schemas
-│   │   ├── services/        # Business logic
-│   │   └── utils/           # Utility functions
-│   ├── tests/
-│   └── alembic/             # DB migrations
-├── docker/                   # Docker configurations
-├── nginx/                    # Nginx configuration
-├── .github/workflows/        # CI/CD pipelines
-└── docs/                     # Documentation
-
-```
-
-## 🛠️ Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- Python 3.11+
-- Docker & Docker Compose
-- PostgreSQL (or use Docker)
-
-### Installation
-
-1. **Clone the repository**
 ```bash
+# Clone repository
 git clone <repository-url>
 cd polimataCopy
-```
 
-2. **Environment Setup**
-```bash
-# Copy environment files
-cp .env.example .env
-```
-
-3. **Docker Setup (Recommended)**
-```bash
-# Build and start all services
+# Start all services
 docker-compose up -d
 
 # Access:
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
+# - Web: http://localhost:3000
+# - API Docs: http://localhost:8000/api/v1/docs
+# - Health: http://localhost:8000/health
+
+# Test credentials:
+# Email: admin@polimata.com
+# Password: admin123
 ```
 
-4. **Manual Setup (Alternative)**
+## 🔐 API Endpoints
 
-**Frontend:**
+### Authentication
+- `POST /api/v1/auth/register` - Register new user
+- `POST /api/v1/auth/login` - Login with credentials
+- `GET /api/v1/auth/me` - Get current user info
+
+### Contacts
+- `POST /api/v1/contacts/` - Create contact (with AI scoring)
+- `GET /api/v1/contacts/` - List all contacts (protected)
+- `PUT /api/v1/contacts/{id}` - Update contact status (protected)
+- `DELETE /api/v1/contacts/{id}` - Delete contact (protected)
+
+### Analytics
+- `GET /api/v1/analytics/summary` - Get analytics summary (protected)
+- `GET /api/v1/analytics/timeline?days=30` - Get timeline (protected)
+
+## 🤖 AI Integration
+
+Uses Claude API for:
+- Lead scoring (0-100)
+- Priority classification
+- Insights extraction
+- Response suggestions
+
+Configure: `ANTHROPIC_API_KEY=sk-ant-api03-xxxxx` in backend/.env
+
+## 📱 Mobile Setup
+
 ```bash
-cd frontend
+cd mobile
 npm install
-npm run dev
+# Update API_URL in src/services/api.js with your local IP
+npm start
+# Scan QR with Expo Go
 ```
 
-**Backend:**
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+## 🐛 Troubleshooting
 
-## 🧪 Testing
+**Backend won't start:** `docker-compose logs backend`
 
-### Frontend Tests
-```bash
-cd frontend
-npm test                 # Run unit tests
-npm run test:e2e        # Run E2E tests
-npm run test:coverage   # Generate coverage report
-```
+**Frontend can't connect:** Check CORS in backend/.env
 
-### Backend Tests
-```bash
-cd backend
-pytest                   # Run all tests
-pytest --cov            # With coverage
-pytest -v               # Verbose output
-```
-
-## 🚢 Deployment
-
-### Production Build
-
-**Frontend:**
-```bash
-cd frontend
-npm run build
-```
-
-**Backend:**
-```bash
-cd backend
-docker build -t polimata-api .
-```
-
-### Docker Deployment
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-## 📊 Features
-
-- ✅ Modern, responsive UI with dark theme
-- ✅ Real-time AI chatbot integration
-- ✅ Multiple language support (ES/EN)
-- ✅ Advanced analytics dashboard
-- ✅ Microservices-ready architecture
-- ✅ Comprehensive API documentation
-- ✅ Performance optimized
-- ✅ SEO friendly
-- ✅ Accessibility compliant (WCAG 2.1)
-- ✅ Type-safe (TypeScript + Pydantic)
-
-## 🏗️ Architecture
-
-### Design Patterns
-- **Clean Architecture**: Separation of concerns
-- **Repository Pattern**: Data access abstraction
-- **Service Layer**: Business logic encapsulation
-- **DTO Pattern**: Data transfer objects
-
-### Key Principles
-- SOLID principles
-- DRY (Don't Repeat Yourself)
-- KISS (Keep It Simple, Stupid)
-- YAGNI (You Aren't Gonna Need It)
-
-## 📈 Performance
-
-- Lighthouse Score: 95+
-- First Contentful Paint: < 1.5s
-- Time to Interactive: < 3.5s
-- API Response Time: < 100ms (p95)
-
-## 🔒 Security
-
-- HTTPS/TLS encryption
-- JWT authentication
-- CORS configuration
-- Input validation
-- SQL injection prevention
-- XSS protection
-- Rate limiting
-- Security headers
+**Mobile can't connect:** Update IP in mobile/src/services/api.js, verify same WiFi
 
 ## 📝 License
 
-MIT License - see LICENSE file for details
-
-## 👥 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## 🙏 Acknowledgments
-
-Built with modern web technologies and industry best practices.
+MIT License
